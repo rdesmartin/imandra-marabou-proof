@@ -1,0 +1,65 @@
+let () = System.use "result.iml";;
+let () = System.use "split.iml";;
+let () = System.use "bounds_lemma.iml";;
+let () = System.use "proof_tree.iml";;
+
+Imandra.add_plugin_yojson ();;
+
+#program;;
+
+module JSONProofParser = struct
+    let (>>=) = Result.(>>=)
+    let parse_split_type = function
+        | `String "U" -> Ok Split.UPPER
+        | `String "L" -> Ok Split.LOWER
+        | _   -> Error "invalid split type"
+
+    let parse_list (parse_elem: YJ.t -> ('a, 'b) result) (l: YJ.t) = match l with
+        | `List l' -> Result.extract_list (List.map parse_elem l')
+        | _ -> Error "invalid list"
+
+    let parse_int (i: YJ.t) = match i with
+        | `Int i' -> Ok (Z.of_int i')
+        | _ -> Error "invalid int"
+
+    let parse_float (f: YJ.t) = match f with 
+        | `Float f' -> Ok (Q.of_float f')
+        | _ -> Error "invalid float"
+
+    let parse_split (s: YJ.t) = match s with
+        | `Assoc [("var", i); ("value", f); ("type", c)] -> 
+            Result.bind3 (fun var value split_type -> Ok (var, value, split_type)) 
+                (parse_int i) 
+                (parse_float f) 
+                (parse_split_type c)
+        | _ -> Error "invalid split"
+
+
+    let parse_node (p: YJ.t): (ProofTree.t, string) result =
+        match p with 
+        | `Assoc [
+            ("split", split_list); 
+            ("contradiction", contra); 
+            ("children", children)
+            ] -> Result.bind2 
+            (fun s c -> Ok ProofTree.Node s c)
+            (parse_list parse_split split_list)
+            (parse_list parse_node children)
+            
+        | `Assoc [
+            ("split", split); 
+            ("contradiction", contra); 
+            ("children", `Null)
+            ] -> 
+            (parse_list parse_float contra) >>= (fun c -> Ok (ProofTree.Leaf c))
+        
+        | _ -> Error "invalid node"
+end
+
+(* let proof_json = YJ.from_file "json/proof.json";;
+
+let proof_json' =  parse_node;; *)
+
+(* let p = of_yojson_MarabouProof_t proof_json [@@program];; *)
+
+#logic;;

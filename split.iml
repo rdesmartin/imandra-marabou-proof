@@ -1,0 +1,4 @@
+module Split = struct
+    type split_type = UPPER | LOWER
+    type t = (int * real * split_type)
+end

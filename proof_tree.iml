@@ -1,0 +1,8 @@
+module ProofTree = struct
+    type t = 
+      (* head split, children, lemmas for the future *)
+      | Node of int * t list
+      (* contradiction *)
+      | Leaf of real list
+
+end
