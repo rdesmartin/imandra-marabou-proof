@@ -1,4 +1,9 @@
+(* todo: refactor to Tightening *)
 module Split = struct
-    type split_type = UPPER | LOWER
-    type t = (int * real * split_type)
-end
+    type t = (int * real * bound_type)
+    let compare (var1, _, _) (var2, _, _) = var1 <= var2
+
+    let is_upper = function
+        | (_, _, UPPER) -> true
+        | _ -> false
+    end

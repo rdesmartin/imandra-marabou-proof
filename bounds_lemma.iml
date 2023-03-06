@@ -1,3 +1,0 @@
-module BoundsLemma = struct
-    type t = real list
-end

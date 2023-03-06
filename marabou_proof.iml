@@ -1,6 +1,6 @@
 Imandra.add_plugin_yojson ();;
 
-module MarabouProof = struct
+module MarabouProofRecord = struct
     type sparse_matrix_entry = { var: int; value: float }
     
     type sparse_matrix = sparse_matrix_entry list list
