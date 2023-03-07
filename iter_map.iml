@@ -27,9 +27,8 @@ module Iter_map = struct
       let m = of_list ~default xs in
       add k v m
 
-  let const x = 
-    { map = Map.const x;
-      keys = [] }
+  let const c = of_list ~default:c [] 
+
 end
 
 module Iter_map_lemmas = struct

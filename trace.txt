@@ -1,0 +1,86 @@
+aff_var: 618, aff_bound_t: 1, value: 0.183683, caus_var: 105, caus_bound_t: 0 
+b: 105, f: 139, aux: 618, row_bound: -0.183683
+
+aff_var: 687, aff_bound_t: 1, value: 0.000000, caus_var: 251, caus_bound_t: 0 
+b: 251, f: 301, aux: 687, row_bound: -0.965881
+
+aff_var: 646, aff_bound_t: 1, value: 0.010855, caus_var: 161, caus_bound_t: 0 
+b: 161, f: 211, aux: 646, row_bound: -0.054444
+
+aff_var: 618, aff_bound_t: 1, value: 0.194339, caus_var: 105, caus_bound_t: 0 
+b: 105, f: 139, aux: 618, row_bound: -0.194339
+
+aff_var: 710, aff_bound_t: 1, value: 1.033176, caus_var: 274, caus_bound_t: 0 
+b: 274, f: 324, aux: 710, row_bound: -2.622410
+
+aff_var: 646, aff_bound_t: 1, value: 0.479643, caus_var: 161, caus_bound_t: 0 
+b: 161, f: 211, aux: 646, row_bound: -0.587748
+
+aff_var: 710, aff_bound_t: 1, value: 0.205301, caus_var: 274, caus_bound_t: 0 
+b: 274, f: 324, aux: 710, row_bound: -0.716847
+
+aff_var: 631, aff_bound_t: 1, value: 0.066987, caus_var: 120, caus_bound_t: 0 
+b: 120, f: 148, aux: 631, row_bound: -0.088977
+
+aff_var: 711, aff_bound_t: 1, value: 2.240715, caus_var: 275, caus_bound_t: 0 
+b: 275, f: 325, aux: 711, row_bound: -2.251223
+
+aff_var: 711, aff_bound_t: 1, value: 1.083479, caus_var: 275, caus_bound_t: 0 
+b: 275, f: 325, aux: 711, row_bound: -1.909519
+
+aff_var: 646, aff_bound_t: 1, value: 0.348382, caus_var: 161, caus_bound_t: 0 
+b: 161, f: 211, aux: 646, row_bound: -0.362441
+
+aff_var: 774, aff_bound_t: 1, value: 0.000000, caus_var: 388, caus_bound_t: 0 
+b: 388, f: 438, aux: 774, row_bound: -3.456236
+
+aff_var: 711, aff_bound_t: 1, value: 2.340717, caus_var: 275, caus_bound_t: 0 
+b: 275, f: 325, aux: 711, row_bound: -2.843754
+
+aff_var: 607, aff_bound_t: 1, value: 0.018668, caus_var: 93, caus_bound_t: 0 
+b: 93, f: 133, aux: 607, row_bound: -0.103330
+
+aff_var: 598, aff_bound_t: 1, value: 0.117978, caus_var: 83, caus_bound_t: 0 
+b: 83, f: 127, aux: 598, row_bound: -0.117978
+
+aff_var: 646, aff_bound_t: 1, value: 0.395700, caus_var: 161, caus_bound_t: 0 
+b: 161, f: 211, aux: 646, row_bound: -0.465902
+
+aff_var: 711, aff_bound_t: 1, value: 2.934055, caus_var: 275, caus_bound_t: 0 
+b: 275, f: 325, aux: 711, row_bound: -4.685915
+
+aff_var: 598, aff_bound_t: 1, value: 0.040781, caus_var: 83, caus_bound_t: 0 
+b: 83, f: 127, aux: 598, row_bound: -0.165523
+
+aff_var: 652, aff_bound_t: 1, value: 0.205041, caus_var: 167, caus_bound_t: 0 
+b: 167, f: 217, aux: 652, row_bound: -0.225721
+
+aff_var: 760, aff_bound_t: 1, value: 4.641682, caus_var: 374, caus_bound_t: 0 
+b: 374, f: 424, aux: 760, row_bound: -6.904657
+
+aff_var: 701, aff_bound_t: 1, value: 0.000000, caus_var: 265, caus_bound_t: 0 
+b: 265, f: 315, aux: 701, row_bound: -0.051160
+
+aff_var: 592, aff_bound_t: 1, value: 0.345945, caus_var: 77, caus_bound_t: 0 
+b: 77, f: 126, aux: 592, row_bound: -0.345945
+
+aff_var: 631, aff_bound_t: 1, value: 0.121448, caus_var: 120, caus_bound_t: 0 
+b: 120, f: 148, aux: 631, row_bound: -0.121448
+
+aff_var: 631, aff_bound_t: 1, value: 0.058779, caus_var: 120, caus_bound_t: 0 
+b: 120, f: 148, aux: 631, row_bound: -0.058779
+
+aff_var: 566, aff_bound_t: 1, value: 0.080130, caus_var: 14, caus_bound_t: 0 
+b: 14, f: 58, aux: 566, row_bound: -0.080130
+
+aff_var: 711, aff_bound_t: 1, value: 1.646501, caus_var: 275, caus_bound_t: 0 
+b: 275, f: 325, aux: 711, row_bound: -2.155865
+
+aff_var: 711, aff_bound_t: 1, value: 1.886345, caus_var: 275, caus_bound_t: 0 
+b: 275, f: 325, aux: 711, row_bound: -1.950479
+
+aff_var: 760, aff_bound_t: 1, value: 6.814845, caus_var: 374, caus_bound_t: 0 
+b: 374, f: 424, aux: 760, row_bound: -12.004465
+
+aff_var: 786, aff_bound_t: 1, value: 1.171408, caus_var: 450, caus_bound_t: 0 
+b: 450, f: 500, aux: 786, row_bound: -86.775488

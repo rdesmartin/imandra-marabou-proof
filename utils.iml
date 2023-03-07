@@ -1,5 +1,9 @@
 type bound_type = UPPER | LOWER
 
+let bound_type_to_bool = function
+    | UPPER -> true
+    | LOWER -> false
+
 let bound_type_to_int = function
     | UPPER -> 1i
     | LOWER -> 0i

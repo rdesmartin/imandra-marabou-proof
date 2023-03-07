@@ -23,7 +23,7 @@ module JSONProofParser = struct
         | `Float f' -> Ok (Q.of_float f')
         | _ -> Error ("invalid float ")
 
-    let parse_sparse_matrix (m: YJ.t) = 
+    let parse_sparse_matrix (m: YJ.t): ((('a, 'b) Iter_map.t list, 'c) result) = 
         let parse_entry e = match e with
             | `Assoc [
                 ("var", i);
@@ -33,17 +33,19 @@ module JSONProofParser = struct
                 Result.bind2 (fun v w -> Ok (v, w)) var value
             | _ -> Error ("invalid matrix entry ")
         in
-        parse_list (parse_list parse_entry) m
+        let list_res: ((Z.t * real) list list, string) result = parse_list (parse_list parse_entry) m in
+        let f:  (Z.t * real) list list -> (Z.t, real) Iter_map.t list = List.map (Iter_map.of_list ~default:0.) in
+        list_res >>= (fun l -> Ok (f l))
 
     let parse_dictionary (d: YJ.t) =
         let parse_elem (acc, count)  (el: YJ.t) = 
             let el' = parse_float el in
-            let res = Result.bind2 (fun e a -> Ok (Map.add count e a)) el' acc in
+            let res = Result.bind2 (fun e a -> Ok (Iter_map.add count e a)) el' acc in
             (res, count + 1)
         in
         match d with
             (* use result type and return error as default *)
-            | `List d' -> let (res, _) = List.fold_left parse_elem (Ok (Map.const 0.), 0) d' in
+            | `List d' -> let (res, _) = List.fold_left parse_elem (Ok (Iter_map.const 0.), 0) d' in
                 res
             | _ -> Error "invalid dictionary entry (bounds list)"
 

@@ -1,0 +1,37 @@
+axiom l1 (x: (int, real) M.t) (y: real list) (tableau: (int, real) M.t list) = 
+    (null_prod tableau x) ==> 
+    dot_product x.keys x (compute_combination y tableau (M.const 0.)) = 0.
+[@@rw]
+
+#disable M.const;;
+
+(* axiom l2 (x: (int, real) M.t) (y: real list) (tableau: (int, real) M.t list) upper_bounds lower_bounds = 
+    check_contradiction y tableau upper_bounds lower_bounds [@trigger rw] ==>
+    ( is_bounded x upper_bounds lower_bounds ==>
+    dot_product x.keys x (compute_combination y tableau (M.const 0.)) <. 0.) = true
+[@@auto] [@@rw] *)
+
+axiom dot_product_check_contradiction_eq (x: (int, real) M.t) (y: real list) (tableau: (int, real) M.t list) upper_bounds lower_bounds =
+    (is_bounded x upper_bounds lower_bounds && 
+    dot_product x.keys x (compute_combination y tableau (M.const 0.)) <. 0. [@trigger rw]) ==>
+    check_contradiction y tableau upper_bounds lower_bounds = true
+[@@rw]
+
+axiom a1 (x: (int, real) M.t) (y: real list) (tableau: (int, real) M.t list) = 
+    dot_product x.keys x (compute_combination y tableau (M.const 0.)) = 0. ==> 
+    (dot_product x.keys x (compute_combination y tableau (M.const 0.)) <. 0.) = false
+[@@rw]
+
+lemma l3 (x: (int, real) M.t) (y: real list) (tableau: (int, real) M.t list) upper_bounds lower_bounds =
+    (null_prod tableau x [@trigger rw]) && is_bounded x upper_bounds lower_bounds ==> 
+    (check_contradiction y tableau upper_bounds lower_bounds) = false
+[@@simp]
+[@@auto]
+[@@disable null_prod, dot_product, check_contradiction, is_bounded, M.const] 
+[@@rw]
+
+theorem contradiction_verification x contradiction tableau upper_bounds lower_bounds =
+    is_bounded x upper_bounds lower_bounds && 
+    check_contradiction contradiction tableau upper_bounds lower_bounds ==>
+    not (null_prod tableau x)
+    [@@auto]
