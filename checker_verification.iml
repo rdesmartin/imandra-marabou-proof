@@ -13,11 +13,6 @@ let is_bounded (x: (int, real) M.t) upper_bounds lower_bounds =
     in
     f x.keys
 
-let rec dot_product x_keys x  y = 
-        match x_keys with 
-        | [] -> 0.
-        | key::tl -> (M.get key x) *. (M.get key y) +. (dot_product tl x y)
-
 let rec null_prod (tableau: (int, real) M.t list) (x: (int, real) M.t) =
     match tableau with 
     | [] -> true
@@ -33,8 +28,6 @@ let rec satisfy_constraints x constraints =
     | _ -> false
 
 lemma verify_children x tableau upper_bounds lower_bounds constraints children =
-
-
 
 
 lemma verify_node_checking x tableau upper_bounds lower_bounds constraints proof_node =

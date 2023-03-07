@@ -19,16 +19,17 @@ module Iter_map = struct
 
   let get k m = Map.get k m.map
 
-  let rec of_list ~default xs =
+  let get_default m = Map.get_default m.map
+
+  let rec of_list xs =
     match xs with
-    | [] -> { map = Map.const default;
+    | [] -> { map = Map.const 0.;
               keys = [] }
     | (k,v)::xs ->
-      let m = of_list ~default xs in
+      let m = of_list xs in
       add k v m
 
-  let const c = of_list ~default:c [] 
-
+  let empty = of_list []
 end
 
 module Iter_map_lemmas = struct
@@ -49,6 +50,27 @@ module Iter_map_lemmas = struct
 
   lemma map_key_mem m k v =
     List.mem k (Iter_map.add k v m).keys
+  [@@auto] [@@rw]
+
+
+  lemma empty_keys' = 
+  M.empty.keys = []
+  [@@auto] [@@rw]
+
+  lemma empty_map'= 
+  M.empty.map = Map.const 0.
+  [@@auto] [@@rw]
+
+  lemma empty_keys (m: ('a, 'b) M.t) = 
+    m = M.empty ==> m.keys = []
+  [@@auto] [@@rw]
+
+  lemma empty_map (m: ('a, 'b) M.t) = 
+    m = M.empty ==> m.map = Map.const 0.
+  [@@auto] [@@rw]
+
+  lemma default_zero_empty (m: ('a, 'b) M.t) k =
+    m = M.empty ==> M.get k m = 0.
   [@@auto] [@@rw]
 
 end

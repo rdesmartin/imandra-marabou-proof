@@ -1,8 +1,8 @@
 module M = Iter_map
 
-let return_debug s b = if b then true else (Printf.printf s; false)
+(* let return_debug s b = if b then true else (Printf.printf s; false) *)
 
-(* let return_debug _ b = b *)
+let return_debug _ b = b
 
 (* check that some split corresponds to a single variable split *)
 let check_single_var_split children_splits = 
@@ -112,12 +112,11 @@ let rec compute_combination expl (tableau: ('a, 'b) M.t list) linear_combination
     | coeff::contra_tl, row::tableau_tl -> let linear_combination' = update_combination coeff row.keys row linear_combination in
         compute_combination contra_tl tableau_tl linear_combination'
     (* TODO: handle error case *)
-    | _ -> M.const 0.
+    | _ -> M.empty
 
 
 (* compute the upper bound for a tableau row represented as a M.t / sparse vector *)
 let compute_row_upper_bound (row: ('a, 'b) M.t) upper_bounds lower_bounds =
-    (* TODO: Map.extract is not supported in logic mode, find workaround *)
     let linear_comb_keys = row.keys in 
     let acc_func acc var =
         let value = M.get var row in 
@@ -128,7 +127,7 @@ let compute_row_upper_bound (row: ('a, 'b) M.t) upper_bounds lower_bounds =
             acc +. (M.get var upper_bounds) *. value
     in
     let sum = List.fold_left acc_func 0. linear_comb_keys in
-    sum 
+    sum
     
 (* compute the lower bound for a tableau row represented as a M.t / sparse vector *)
 let compute_row_lower_bound (row: ('a, 'b) M.t) upper_bounds lower_bounds =
@@ -149,7 +148,7 @@ let compute_row_lower_bound (row: ('a, 'b) M.t) upper_bounds lower_bounds =
 let match_relu_lemmas b f aux bound_lemma tableau upper_bounds lower_bounds =
     match bound_lemma with
     | BoundLemma.Full (aff_var, aff_bound_t, value, caus_var, caus_bound_t, constr_t, expl) ->
-        let linear_combination = compute_combination expl tableau (M.const 0.) in
+        let linear_combination = compute_combination expl tableau (M.empty) in
         let ci = M.get caus_var linear_combination in
         let updated_linear_combination = M.add caus_var (ci+.1.) linear_combination in
         let row_bound = if caus_bound_t = UPPER then compute_row_upper_bound updated_linear_combination upper_bounds lower_bounds else
@@ -175,7 +174,6 @@ let match_relu_lemmas b f aux bound_lemma tableau upper_bounds lower_bounds =
 
             (caus_var = b && caus_bound_t = LOWER && row_bound >. 0. && aff_var = aux && aff_bound_t = UPPER && value = 0.) ||
             (caus_var = f && caus_bound_t = LOWER && row_bound >=. 0. && aff_var = aux && aff_bound_t = UPPER && value = 0.) ||
-            (caus_var = b && caus_bound_t = LOWER && row_bound >=. (-. value) && aff_var = aux && aff_bound_t = UPPER && value >=. 0.) ||
             (caus_var = aux && caus_bound_t = LOWER && row_bound >. 0. && aff_var = f && aff_bound_t = UPPER && value = 0.) ||
             (caus_var = f && caus_bound_t = LOWER && row_bound <. 0. && aff_var = f && aff_bound_t = LOWER && value = 0.) ||        
             (caus_var = b && caus_bound_t = UPPER && row_bound <=. 0.  && aff_var = f && aff_bound_t = UPPER && value >=. 0.)
@@ -187,13 +185,13 @@ let match_relu_lemmas b f aux bound_lemma tableau upper_bounds lower_bounds =
         then 
         (true, row_bound)
         else if 
-            (caus_var = b && caus_bound_t = UPPER && row_bound <=. 0.  && aff_var = aux && aff_bound_t = LOWER) ||
-            (caus_var = aux && caus_bound_t = UPPER && aff_var = b && aff_bound_t = LOWER)
+           (caus_var = aux && caus_bound_t = UPPER && aff_var = b && aff_bound_t = LOWER) ||
+           (caus_var = b && caus_bound_t = LOWER && aff_var = aux && aff_bound_t = UPPER && value >=. 0.)
         then 
             (true, -. row_bound)
         else 
-            let () = BoundLemma.print bound_lemma in 
-            let () = Printf.printf "b: %d, f: %d, aux: %d, row_bound: %f\n\n" (Z.to_int b) (Z.to_int f) (Z.to_int aux) (Q.to_float row_bound) in
+            (* let () = BoundLemma.print bound_lemma in 
+            let () = Printf.printf "b: %d, f: %d, aux: %d, row_bound: %f\n\n" (Z.to_int b) (Z.to_int f) (Z.to_int aux) (Q.to_float row_bound) in *)
             (false, 0.)
     | _ -> (false, 0.)
 
@@ -225,7 +223,7 @@ let check_bound_lemmas bound_lemmas tableau upper_bounds lower_bounds constraint
 
 (* check that the contradiction is a valid Farkas lemma vector *)
 let check_contradiction contradiction tableau upper_bounds lower_bounds = 
-    let linear_combination = compute_combination contradiction tableau (M.const 0.) in
+    let linear_combination = compute_combination contradiction tableau (M.empty) in
     compute_row_upper_bound  linear_combination upper_bounds lower_bounds <. 0.
 
 

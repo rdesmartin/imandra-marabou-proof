@@ -34,7 +34,7 @@ module JSONProofParser = struct
             | _ -> Error ("invalid matrix entry ")
         in
         let list_res: ((Z.t * real) list list, string) result = parse_list (parse_list parse_entry) m in
-        let f:  (Z.t * real) list list -> (Z.t, real) Iter_map.t list = List.map (Iter_map.of_list ~default:0.) in
+        let f:  (Z.t * real) list list -> (Z.t, real) Iter_map.t list = List.map (Iter_map.of_list) in
         list_res >>= (fun l -> Ok (f l))
 
     let parse_dictionary (d: YJ.t) =
@@ -45,7 +45,7 @@ module JSONProofParser = struct
         in
         match d with
             (* use result type and return error as default *)
-            | `List d' -> let (res, _) = List.fold_left parse_elem (Ok (Iter_map.const 0.), 0) d' in
+            | `List d' -> let (res, _) = List.fold_left parse_elem (Ok (Iter_map.empty), 0) d' in
                 res
             | _ -> Error "invalid dictionary entry (bounds list)"
 
