@@ -106,11 +106,13 @@ let rec update_combination coeff keys row linear_combination =
 
 
 (* compute a linear combination of tableau rows with coefficients from an explanation vector (corresponding to a Leaf's contradiction or a lemma in any node) *)
-let rec compute_combination expl (tableau: ('a, 'b) M.t list) linear_combination =
-    match expl, tableau with
-    | [], [] -> linear_combination
-    | coeff::contra_tl, row::tableau_tl -> let linear_combination' = update_combination coeff row.keys row linear_combination in
-        compute_combination contra_tl tableau_tl linear_combination'
+let rec compute_combination (expl: (int, real) M.t) (tableau: ('a, 'b) M.t list) linear_combination count =
+    match tableau with
+    | [] -> linear_combination
+    | row::tableau_tl -> 
+        let coeff = M.get count expl in
+        let linear_combination' = update_combination coeff row.keys row linear_combination in
+        compute_combination expl tableau_tl linear_combination' (count + 1)
     (* TODO: handle error case *)
     | _ -> M.empty
 
@@ -148,7 +150,7 @@ let compute_row_lower_bound (row: ('a, 'b) M.t) upper_bounds lower_bounds =
 let match_relu_lemmas b f aux bound_lemma tableau upper_bounds lower_bounds =
     match bound_lemma with
     | BoundLemma.Full (aff_var, aff_bound_t, value, caus_var, caus_bound_t, constr_t, expl) ->
-        let linear_combination = compute_combination expl tableau (M.empty) in
+        let linear_combination = compute_combination expl tableau (M.empty) 0 in
         let ci = M.get caus_var linear_combination in
         let updated_linear_combination = M.add caus_var (ci+.1.) linear_combination in
         let row_bound = if caus_bound_t = UPPER then compute_row_upper_bound updated_linear_combination upper_bounds lower_bounds else
@@ -200,7 +202,7 @@ let match_relu_lemmas b f aux bound_lemma tableau upper_bounds lower_bounds =
 let rec check_full_lemmas bound_lemmas tableau upper_bounds lower_bounds constraints =
     match bound_lemmas with  
         | [] -> (true, upper_bounds, lower_bounds)
-        | ((BoundLemma.Full (aff_var, aff_bound_t, value, caus_var, caus_bound_t, constr_t, expl)) as bound_lemma)::tl ->
+        | ((BoundLemma.Full (aff_var, aff_bound_t, value, caus_var, caus_bound_t, constr_t, _)) as bound_lemma)::tl ->
             let matched_constraint = match_constraint aff_var caus_var constraints in
             ( match matched_constraint with 
                 | (RELU, [b; f; aux; _]) -> let (matched_lemma, to_update) = match_relu_lemmas b f aux bound_lemma tableau upper_bounds lower_bounds in
@@ -223,9 +225,8 @@ let check_bound_lemmas bound_lemmas tableau upper_bounds lower_bounds constraint
 
 (* check that the contradiction is a valid Farkas lemma vector *)
 let check_contradiction contradiction tableau upper_bounds lower_bounds = 
-    let linear_combination = compute_combination contradiction tableau (M.empty) in
+    let linear_combination = compute_combination contradiction tableau (M.empty) 0 in
     compute_row_upper_bound  linear_combination upper_bounds lower_bounds <. 0.
-
 
 (* recursively check nodes in the proof tree *)
 let rec check_node tableau upper_bounds lower_bounds constraints proof_node =

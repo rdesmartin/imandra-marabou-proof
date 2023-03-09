@@ -1,3 +1,4 @@
+#program;;
 let () = System.use "result.iml";;
 let () = System.use "utils.iml";;
 let () = System.use "iter_map.iml";;
@@ -34,10 +35,19 @@ let medium2 = "json/mediumJsonProof2.json"
 
 let large = "json/largeJsonProof.json"
 
-(* let load_proof file_name =
+let load_proof file_name =
     let proof_json = YJ.from_file file_name in
     JSONProofParser.parse_proof proof_json
-    [@@program];; *)
+    [@@program];;
+
+let main file_name =
+(* create function parametrised on file name *)
+    let proof_res = load_proof file_name in
+    match proof_res with
+    | Ok (tableau, upper_bounds, lower_bounds, constraints, proof_tree) -> 
+        check_root tableau upper_bounds lower_bounds constraints proof_tree
+    | Error e -> false
+
 
 (* let proof_res = load_proof small [@@reflect];; *)
 

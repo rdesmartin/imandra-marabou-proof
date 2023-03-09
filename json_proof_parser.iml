@@ -94,7 +94,7 @@ module JSONProofParser = struct
             let caus_var' = parse_int caus_var in
             let caus_bound' = parse_bound_type caus_bound in
             let constrnt' = parse_constraint_type constrnt in
-            let expl' = parse_list parse_float expl in
+            let expl' = parse_dictionary expl in
             Result.bind7 (fun a b c d e f g -> Ok (BoundLemma.Full (a, b, c, d, e, f, g))) aff_var' aff_bound' bound' caus_var' caus_bound' constrnt' expl'
         | `Assoc [
             ("affVar", i);
@@ -133,7 +133,7 @@ module JSONProofParser = struct
             ("contradiction", contra); 
             ] -> let splits = parse_list parse_split split_list in
                 let lemmas = parse_list parse_bound_lemma lemma_list in
-                let contra' = parse_list parse_float contra in 
+                let contra' = parse_dictionary contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         (* leaf without lemmas *)
         | `Assoc [
@@ -141,7 +141,7 @@ module JSONProofParser = struct
             ("contradiction", contra); 
             ] -> let splits = parse_list parse_split split_list in
                 let lemmas = Ok [] in
-                let contra' = parse_list parse_float contra in 
+                let contra' = parse_dictionary contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         | _ -> Error ("invalid node " ^ (YJ.show p))
 
@@ -169,14 +169,14 @@ module JSONProofParser = struct
             ("contradiction", contra); 
             ] -> let splits = Ok [] in
                 let lemmas = parse_list parse_bound_lemma lemma_list in
-                let contra' = parse_list parse_float contra in 
+                let contra' = parse_dictionary contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         (* leaf without lemmas *)
         | `Assoc [
             ("contradiction", contra); 
             ] -> let splits = Ok [] in
                 let lemmas = Ok [] in
-                let contra' = parse_list parse_float contra in 
+                let contra' = parse_dictionary contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         | _ -> Error ("invalid root node " ^ (YJ.show r))
 

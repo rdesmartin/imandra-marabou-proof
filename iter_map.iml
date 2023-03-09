@@ -30,6 +30,10 @@ module Iter_map = struct
       add k v m
 
   let empty = of_list []
+
+  let non_zero_keys ((m: ('a, real) t)) k =
+   (not (m.keys = []) && get_default m = 0.) && (List.mem k m.keys <==> get k m <> 0.)
+
 end
 
 module Iter_map_lemmas = struct
