@@ -226,7 +226,12 @@ let check_bound_lemmas bound_lemmas tableau upper_bounds lower_bounds constraint
 (* check that the contradiction is a valid Farkas lemma vector *)
 let check_contradiction contradiction tableau upper_bounds lower_bounds = 
     let linear_combination = compute_combination contradiction tableau (M.empty) 0 in
-    compute_row_upper_bound  linear_combination upper_bounds lower_bounds <. 0.
+    let result = compute_row_upper_bound  linear_combination upper_bounds lower_bounds in 
+    let _ = M.print linear_combination in let () = Printf.printf "\n" in
+    let _ = M.print upper_bounds in let () = Printf.printf "\n" in
+    let _ = M.print lower_bounds in let () = Printf.printf "\n" in
+    let () = Printf.printf "contradiction; bound is %f\n" (Q.to_float result) in
+    ( result <. 0.)
 
 (* recursively check nodes in the proof tree *)
 let rec check_node tableau upper_bounds lower_bounds constraints proof_node =
