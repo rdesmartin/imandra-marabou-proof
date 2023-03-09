@@ -2,6 +2,8 @@ Imandra.add_plugin_yojson () ;;
 
 module JSONProofParser = struct
     let (>>=) = Result.(>>=)
+    let (>|=) = Result.(>|=)
+    
 
     let parse_bound_type = function
         | `String "U" -> Ok UPPER
@@ -23,7 +25,7 @@ module JSONProofParser = struct
         | `Float f' -> Ok (Q.of_float f')
         | _ -> Error ("invalid float ")
 
-    let parse_sparse_matrix (m: YJ.t): ((('a, 'b) Iter_map.t list, 'c) result) = 
+    let parse_tableau (m: YJ.t) (width: int): (real list list, 'c) result = 
         let parse_entry e = match e with
             | `Assoc [
                 ("var", i);
@@ -34,20 +36,8 @@ module JSONProofParser = struct
             | _ -> Error ("invalid matrix entry ")
         in
         let list_res: ((Z.t * real) list list, string) result = parse_list (parse_list parse_entry) m in
-        let f:  (Z.t * real) list list -> (Z.t, real) Iter_map.t list = List.map (Iter_map.of_list) in
-        list_res >>= (fun l -> Ok (f l))
-
-    let parse_dictionary (d: YJ.t) =
-        let parse_elem (acc, count)  (el: YJ.t) = 
-            let el' = parse_float el in
-            let res = Result.bind2 (fun e a -> Ok (Iter_map.add count e a)) el' acc in
-            (res, count + 1)
-        in
-        match d with
-            (* use result type and return error as default *)
-            | `List d' -> let (res, _) = List.fold_left parse_elem (Ok (Iter_map.empty), 0) d' in
-                res
-            | _ -> Error "invalid dictionary entry (bounds list)"
+        let map_sparse_to_dense_row = List.map (fun x -> Iter_map.to_list (width - 1) (Iter_map.of_list x)) in
+        list_res >>= (fun l -> Ok (map_sparse_to_dense_row l))
 
     let parse_constraint_type (c: YJ.t) =
     (parse_int c) >>= (fun x -> match Constraint.constraint_type_of_int x with
@@ -94,7 +84,7 @@ module JSONProofParser = struct
             let caus_var' = parse_int caus_var in
             let caus_bound' = parse_bound_type caus_bound in
             let constrnt' = parse_constraint_type constrnt in
-            let expl' = parse_dictionary expl in
+            let expl' = parse_list parse_float expl in
             Result.bind7 (fun a b c d e f g -> Ok (BoundLemma.Full (a, b, c, d, e, f, g))) aff_var' aff_bound' bound' caus_var' caus_bound' constrnt' expl'
         | `Assoc [
             ("affVar", i);
@@ -133,7 +123,7 @@ module JSONProofParser = struct
             ("contradiction", contra); 
             ] -> let splits = parse_list parse_split split_list in
                 let lemmas = parse_list parse_bound_lemma lemma_list in
-                let contra' = parse_dictionary contra in 
+                let contra' = parse_list parse_float contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         (* leaf without lemmas *)
         | `Assoc [
@@ -141,7 +131,7 @@ module JSONProofParser = struct
             ("contradiction", contra); 
             ] -> let splits = parse_list parse_split split_list in
                 let lemmas = Ok [] in
-                let contra' = parse_dictionary contra in 
+                let contra' = parse_list parse_float contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         | _ -> Error ("invalid node " ^ (YJ.show p))
 
@@ -169,34 +159,32 @@ module JSONProofParser = struct
             ("contradiction", contra); 
             ] -> let splits = Ok [] in
                 let lemmas = parse_list parse_bound_lemma lemma_list in
-                let contra' = parse_dictionary contra in 
+                let contra' = parse_list parse_float contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         (* leaf without lemmas *)
         | `Assoc [
             ("contradiction", contra); 
             ] -> let splits = Ok [] in
                 let lemmas = Ok [] in
-                let contra' = parse_dictionary contra in 
+                let contra' = parse_list parse_float contra in 
                 Result.bind3 (fun s b c -> Ok (ProofTree.Leaf (s, b, c))) splits lemmas contra'
         | _ -> Error ("invalid root node " ^ (YJ.show r))
 
     let parse_proof (p: YJ.t) = 
-        match p with 
+        match p with
         | `Assoc [
             ("tableau", tableau);
             ("upperBounds", upper_bounds);
             ("lowerBounds", lower_bounds);
             ("constraints", constraints);
             ("proof", proof_tree)
-        ] -> let tableau' = parse_sparse_matrix tableau in
-            let upper_bounds' = parse_dictionary upper_bounds in
-            let lower_bounds' = parse_dictionary lower_bounds in
+        ] -> 
+            let upper_bounds' = parse_list parse_float upper_bounds in
+            let lower_bounds' = parse_list parse_float lower_bounds in
+            let tableau_width = upper_bounds' >|= List.length in
+            let tableau' = tableau_width >>= parse_tableau tableau in
             let constraints' = parse_list parse_constraint constraints in
             let proof_tree' = parse_root proof_tree in
             Result.bind5 (fun a b c d e -> Ok (a, b, c, d, e)) tableau' upper_bounds' lower_bounds' constraints' proof_tree'  
         | _ -> Error "invalid proof "
 end [@@program]
-
-(* let proof_json = YJ.from_file "json/single_node.json";; *)
-
-(* #logic;; *)
