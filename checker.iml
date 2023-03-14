@@ -113,8 +113,13 @@ let rec compute_combination' (expl: real list) (tableau: real list list) (linear
     match expl, tableau with
     | [], [] -> linear_combination
     | coeff::expl_tl, row::rows -> 
-        let linear_combination' = update_combination coeff row [] linear_combination in
-        compute_combination' expl_tl rows linear_combination'
+        if coeff <> 0.
+        then
+            let linear_combination' = update_combination coeff row [] linear_combination in
+            compute_combination' expl_tl rows linear_combination'
+        else
+            compute_combination' expl_tl rows linear_combination
+
     (* TODO: handle error case *)
     | [],_::_ | _::_, [] -> []
 
