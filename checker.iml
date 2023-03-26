@@ -125,7 +125,7 @@ let compute_combination (expl: real list) (tableau: real list list) =
     match tableau with
     | [] -> []
     | row::_ ->
-        compute_combination' expl tableau (List.repeat 0. (List.length row ))
+        compute_combination' expl tableau (repeat 0. (List.length row))
 
 
 (* compute the upper bound for a tableau row represented as list of reals *)
@@ -253,4 +253,4 @@ let check_root tableau upper_bounds lower_bounds constraints proof_node =
     | _ -> return_debug "root check" false
     in
 
-    main_check
+    sanity_check_res && main_check
